@@ -1,0 +1,6 @@
+node_modules/
+stills/
+stills_check/
+frames/
+*.mp4
+!zach-armour-short.mp4

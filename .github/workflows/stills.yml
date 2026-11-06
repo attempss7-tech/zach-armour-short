@@ -1,0 +1,24 @@
+name: stills
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stills:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install three@0.169.0 playwright@1.49.1 @fontsource/montserrat@5.1.0
+      - run: npx playwright install --with-deps chromium
+      - run: ffmpeg -version | head -1
+      - run: node render.mjs stills 1.0,5.3,12.0,21.5 stills
+        env:
+          GL: swiftshader
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stills
+          path: stills
