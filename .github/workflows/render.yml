@@ -18,7 +18,13 @@ jobs:
           node-version: 20
       - run: npm install three@0.169.0 playwright@1.49.1 @fontsource/montserrat@5.1.0
       - run: npx playwright install --with-deps chromium
-      - run: ffmpeg -version || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+      - name: Ensure ffmpeg (static build, never apt)
+        run: |
+          if command -v ffmpeg >/dev/null; then ffmpeg -version | head -1; exit 0; fi
+          curl -sL -o /tmp/ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+          tar -xf /tmp/ffmpeg.tar.xz -C /tmp
+          sudo ln -sf /tmp/ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/ffmpeg
+          ffmpeg -version | head -1
       - run: node render_shard.mjs ${{ matrix.shard }} 10 745
         env:
           GL: swiftshader
@@ -38,7 +44,13 @@ jobs:
           pattern: seg-*
           path: segs
           merge-multiple: true
-      - run: ffmpeg -version || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
+      - name: Ensure ffmpeg (static build, never apt)
+        run: |
+          if command -v ffmpeg >/dev/null; then ffmpeg -version | head -1; exit 0; fi
+          curl -sL -o /tmp/ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+          tar -xf /tmp/ffmpeg.tar.xz -C /tmp
+          sudo ln -sf /tmp/ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/ffmpeg
+          ffmpeg -version | head -1
       - run: |
           ls -l segs
           : > list.txt
