@@ -48,6 +48,10 @@ await browser.close();
 server.close();
 
 const seg = `seg_${String(shard).padStart(2, '0')}.mp4`;
-const ff = spawnSync('ffmpeg', ['-y', '-v', 'error', '-framerate', String(fps), '-start_number', String(n0), '-i', 'frames/frame_%04d.jpg', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', seg], { stdio: 'inherit' });
-if (ff.status !== 0) { console.error('ffmpeg segment encode failed'); process.exit(1); }
+console.log('frames on disk:', fs.readdirSync('frames').length, 'first:', fs.readdirSync('frames').sort()[0]);
+const ff = spawnSync('ffmpeg', ['-y', '-v', 'error', '-framerate', String(fps), '-start_number', String(n0), '-i', 'frames/frame_%04d.jpg', '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', seg], { encoding: 'utf-8' });
+if (ff.status !== 0) {
+  console.error('ffmpeg segment encode failed', JSON.stringify({ status: ff.status, error: String(ff.error || ''), stdout: ff.stdout || '', stderr: ff.stderr || '' }));
+  process.exit(1);
+}
 console.log('wrote', seg);

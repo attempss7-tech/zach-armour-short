@@ -18,6 +18,7 @@ jobs:
           node-version: 20
       - run: npm install three@0.169.0 playwright@1.49.1 @fontsource/montserrat@5.1.0
       - run: npx playwright install --with-deps chromium
+      - run: ffmpeg -version || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
       - run: node render_shard.mjs ${{ matrix.shard }} 10 745
         env:
           GL: swiftshader
@@ -37,6 +38,7 @@ jobs:
           pattern: seg-*
           path: segs
           merge-multiple: true
+      - run: ffmpeg -version || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)
       - run: |
           ls -l segs
           : > list.txt
